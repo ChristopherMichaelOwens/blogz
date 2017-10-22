@@ -9,10 +9,13 @@
         </style>
     </head>
     <body>
-        <div style='float: right'>
-            
-            <a href="newpost">Add a blog entry.</a> | <a href="blog">Main Blog Page</a>
-          
+		<div style='float: right'>
+			{% if session['user'] %}
+			<p>Welcome {{ session['user'] }}</p>
+			{% endif %}
+			<a href="newpost">Add a blog entry.</a> | <a href="blog">Main Blog Page</a></br>
+			<a href="signup">Sign up.</a> | <a href="login">Sign in.</a> | <a href="logout">Log off.</a>
+        
         </div>
         
         {% with messages = get_flashed_messages() %}
