@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center><h1> Welcome to my blog. </h1></center>
+{% for iter in posts %}
+<ul>
+<h1><a href="blog?id={{iter.id}}"/>{{ iter.title }}</a></h1>
+<br/>
+{{ iter.post }}
+</ul>
+<hr>
+{% endfor %}
+
+
+{% endblock %}
