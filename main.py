@@ -28,7 +28,7 @@ class User(db.Model):
 	username = db.Column(db.String(120), unique=True)
 	password = db.Column(db.String(120))
 	#unsure about this one
-	blogs = db.relationship('Blog', backref='user')
+	blogs = db.relationship('Blog', backref='owner')
 	
 	def __init__(self, username, password):
 		self.username = username
@@ -46,7 +46,7 @@ class Blog(db.Model):
 	#this is new too. Add property of owner_id
 	owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	
-	def __init__(self, title, post,owner):
+	def __init__(self, title, post, owner):
 		self.title=title
 		self.post=post
 		self.owner=owner
@@ -115,7 +115,7 @@ def logout():
 		del session['user']
 	except:
 		flash('You cannot log out if you are not logged in.')
-	return redirect("/")
+	return redirect("/blog")
 
 		
 		
@@ -143,7 +143,7 @@ def add_post():
 			return render_template('newpost.html', title=title, post=post, error=error)
 		
 		
-		blog = Blog(post=post, title=title,owner=owner)
+		blog = Blog(title, post, owner)
 		db.session.add(blog)
 		db.session.commit()
 		
@@ -162,14 +162,17 @@ def add_post():
 #action is the @app.route
 
 @app.route('/blog', methods = ['POST', 'GET'])
-def whole_blog():
+def blog():
 #ormobject
 	id = request.args.get("id")
+	userid = request.args.get("user") 
 	go = False
 	if id:
 		go = Blog.query.filter_by(id = id)[0]
-		
 		return render_template('singlepost.html', go = go)
+	if userid:
+		go = Blog.query.filter_by(owner_id = userid).all()
+		return render_template('blog.html', posts = go)
 	posts = Blog.query.all()
 	#posts = Blog.query.all()[0].post
 	#print(posts)
@@ -178,7 +181,7 @@ def whole_blog():
 
 @app.before_request
 def require_login():
-	allowed = ['blog', 'signup', 'login', 'index', '']
+	allowed = ['blog', 'signup', 'login', 'index', 'logout',]
 	if request.endpoint not in allowed and 'user' not in session:
 		flash('You have to sign up to do that')
 		return redirect('/signup')
@@ -186,8 +189,9 @@ def require_login():
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
-	#render_template("index.html")
-	return redirect('/blog')
+	users = User.query.all()
+	return render_template("index.html", users = users)
+	
 
 
 	

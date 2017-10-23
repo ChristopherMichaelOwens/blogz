@@ -7,6 +7,8 @@
 <h1><a href="blog?id={{iter.id}}"/>{{ iter.title }}</a></h1>
 <br/>
 {{ iter.post }}
+</br>
+<h4> Written by:<a href="./blog?user={{iter.owner.id}}">{{iter.owner.username}} </a></h4>
 </ul>
 <hr>
 {% endfor %}
